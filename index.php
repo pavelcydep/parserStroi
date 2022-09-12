@@ -9,22 +9,21 @@ function parserPagination($url){
 	$file = file_get_contents($url);
 	$doc = phpQuery::newDocument($file);
 
-	$arr['table'] = array();
-	foreach($doc->find('.product-name a') as $article){
-	$article = pq($article);
-	$title=$article->attr('title');
-	$arr['table']=$title;
-	}
 	
-	
-	foreach($doc->find('.price') as $article){
-		$articlek = pq($article);
-		$price=$articlek->text();
-		$arr['table']=$price;
-	}
-	
-$arr['table']=[$title,$price];
-print_r($arr['table']);
+
+$entry = $doc->find('.f-fix');
+foreach ($entry as $row) 
+{
+	$row = pq($row);
+	$name = $row->find('.product-name a')->attr('title');
+	$value = $row->find('.regular-price')->text();
+	$data['table'][$name] = $value;
+}
+
+foreach ($data['table'] as $x => $val) {
+	echo "$x = $val<br>";
+  } 
+
 }
 
 function parser($url){
@@ -36,8 +35,22 @@ function parser($url){
 			$article = pq($article);
             
 		}
+        $entry = $doc->find('.f-fix');
+		foreach ($entry as $row) 
+		{
+			$row = pq($row);
+			$name = $row->find('.product-name a')->attr('title');
+			$value = $row->find('.regular-price')->text();
+			$data['table'][$name] = $value;
+		}
+
+		foreach ($data['table'] as $x => $val) {
+			echo "$x = $val<br>";
+		} 
 		
-		
+
+
+
 		$posts = $doc->find('.pages ol li a');
 		foreach($posts as $post){
 			$pqLink = pq($post); 
@@ -47,6 +60,7 @@ function parser($url){
 		for ($i = 0; $i <= 2; $i++) 
 		{
 			parserPagination($nexts[$i]);
+			
 		}
 		
 	
